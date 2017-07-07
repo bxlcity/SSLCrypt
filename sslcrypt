@@ -1,0 +1,238 @@
+#!/bin/bash
+
+# | gzip | base64 | rev
+# | rev | base64 -d | gunzip
+#
+# | tr '[A-Z]' '[X-ZA-W]'  Caesar cipher encoding
+# | tr '[A-Z]' '[N-ZA-M]'  No-sensitive version of ROT13 (only maguscule )
+# | tr '[A-Za-z]' '[N-ZA-Mn-za-m]' sensitive version of ROT13
+# | tr '[A-Za-z]' '[X-ZA-Wx-za-w]'  sensitive version of Caesar cipher encoding
+# | tr '[012345A-Za-z98765]' '[56789X-ZA-Wx-za-w543210]' sensitive version of Caesar cipher encoding with number
+
+# COLORS {{{
+Bold=$(tput bold)
+Underline=$(tput sgr 0 1)
+Reset=$(tput sgr0)
+# Regular Colors
+Red=$(tput setaf 1)
+Green=$(tput setaf 2)
+Yellow=$(tput setaf 3)
+Blue=$(tput setaf 4)
+Purple=$(tput setaf 5)
+Cyan=$(tput setaf 6)
+White=$(tput setaf 7)
+# Bold
+BRed=${Bold}$(tput setaf 1)
+BGreen=${Bold}$(tput setaf 2)
+BYellow=${Bold}$(tput setaf 3)
+BBlue=${Bold}$(tput setaf 4)
+BPurple=${Bold}$(tput setaf 5)
+BCyan=${Bold}$(tput setaf 6)
+BWhite=${Bold}$(tput setaf 7)
+#}}}
+
+# =============================================================
+# FUNCTIONS
+# =============================================================
+
+
+print_line() {
+  printf "%$(tput cols)s\n"|tr ' ' '*'
+}
+
+print_title() {
+  clear
+ print_line
+  echo -e "# ${Bold}$1${Reset}"
+  print_line
+  echo ""
+}
+
+
+about()
+{
+   print_title "${BGreen}OpenSSl Crypt by bxlcity \n"
+
+echo ""
+echo "${BWhite} _/\/\____________________/\/\________________/\/\______/\/\_________________ "
+echo " _/\/\________/\/\__/\/\__/\/\______/\/\/\/\__________/\/\/\/\/\__/\/\__/\/\_ "
+echo " _/\/\/\/\______/\/\/\____/\/\____/\/\________/\/\______/\/\______/\/\__/\/\_ "
+echo " _/\/\__/\/\____/\/\/\____/\/\____/\/\________/\/\______/\/\________/\/\/\/\_ "
+echo " _/\/\/\/\____/\/\__/\/\__/\/\/\____/\/\/\/\__/\/\/\____/\/\/\__________/\/\_ "
+echo " _________________________________________________________________/\/\/\/\___ "
+echo ""
+echo ${White}$x_
+echo ""
+echo "${BBlue}[+][INFO]:: OpenSSL Crypt "
+echo "${White}"
+}
+
+
+help()
+{
+   
+echo "Usage : ./sslcrypt -e aes-128-cbc pass 'string' or ./sslcrypt -ef aes-128-cbc pass in.txt out.txt"
+echo "Options : -e  (encrypt String)"
+echo "-ef (encrypt string in file)"
+echo "-d (decrypt string)"
+echo "-df (decrypt string in file)"
+echo ""
+echo "Type Encryption"
+echo "
+
+aes-128-cbc       aes-128-ecb       aes-192-cbc       aes-192-ecb       
+aes-256-cbc       aes-256-ecb       bf-ecb            bf                
+bf-cbc            bf-cfb                              bf-ofb            
+camellia-128-cbc  camellia-128-ecb  camellia-192-cbc  camellia-192-ecb  
+camellia-256-cbc  camellia-256-ecb  cast              cast-cbc          
+cast5-cbc         cast5-cfb         cast5-ecb         cast5-ofb         
+des               des-cbc           des-cfb           des-ecb           
+des-ede           des-ede-cbc       des-ede-cfb       des-ede-ofb       
+des-ede3          des-ede3-cbc      des-ede3-cfb      des-ede3-ofb      
+des-ofb           des3              desx              rc2               
+rc2-40-cbc        rc2-64-cbc        rc2-cbc           rc2-cfb           
+rc2-ecb           rc2-ofb           rc4               rc4-40            
+seed              seed-cbc          seed-cfb          seed-ecb          
+seed-ofb          "
+
+}
+
+
+if [[ $1 == '-e' ]]; then
+
+about
+echo
+echo "Password :${BGreen} $3"
+echo "${White}Encrypt :${BGreen} $4"
+echo "${White}Type Encryption :${BGreen} $2 - Caesar - Rev - Gzip - Base64 - ROT13 "
+echo "${Cyan}"
+echo $4 | openssl enc -$2 -a -salt -pass pass:$3 | tr '[A-Za-z]' '[X-ZA-Wx-za-w]'| rev | gzip | base64 | tr '[A-Za-z]' '[N-ZA-Mn-za-m]' | paste -d '' -s - 
+echo "${White}"
+
+elif [[ $1 == '-d' ]]; then
+
+about
+echo
+echo "Password :${BGreen} $3"
+echo "${White}Decrypt :${BGreen} $4"
+echo "${White}Type Decryption :${BGreen} ROT13 - Base64 - Gzip - Rev - Caesar - $2 "
+echo "${Cyan}"
+echo $4 | tr '[N-ZA-Mn-za-m]' '[A-Za-z]' | base64 -d | gunzip | rev | tr '[X-ZA-Wx-za-w]' '[A-Za-z]' | openssl enc -$2 -a -d -salt -pass pass:$3 | paste -d '' -s - 
+echo "${White}"
+
+elif [[ $1 == '-ef' ]]; then
+
+about
+echo
+echo "Password :${BGreen} $3"
+echo "${White}Encrypt File :${BGreen} $4"
+echo "${White}Type Encryption :${BGreen} $2 - Caesar - Rev - Gzip - Base64 - ROT13"
+echo "${White}"
+cat $4 | openssl enc -$2 -a -salt -pass pass:$3 | tr '[A-Za-z]' '[X-ZA-Wx-za-w]'| rev | gzip | base64 | tr '[A-Za-z]' '[N-ZA-Mn-za-m]' | paste -d '' -s - > $5
+leafpad $5
+
+elif [[ $1 == '-df' ]]; then
+
+about
+echo
+echo "Password :${BGreen} $3"
+echo "${White}Decrypt File :${BGreen} $4"
+echo "${White}Type Decryption :${BGreen} ROT13 - Base64 - Gzip - Rev - Caesar - $2 "
+echo "${White}"
+cat $4  | tr '[N-ZA-Mn-za-m]' '[A-Za-z]' | base64 -d | gunzip | rev | tr '[X-ZA-Wx-za-w]' '[A-Za-z]' | openssl enc -$2 -a -d -salt -pass pass:$3 | paste -d '' -s - > $5 
+leafpad $5
+
+elif [[ $1 == '' ]] ; then
+
+about
+help
+
+elif [[ $1 == '-h' ]] ; then
+
+about
+help
+
+elif [[ $1 == '--help' ]]; then
+
+about
+help
+echo "
+
+ bf-cbc             Blowfish in CBC mode
+ bf                 Alias for bf-cbc
+ bf-cfb             Blowfish in CFB mode
+ bf-ecb             Blowfish in ECB mode
+ bf-ofb             Blowfish in OFB mode
+
+ cast-cbc           CAST in CBC mode
+ cast               Alias for cast-cbc
+ cast5-cbc          CAST5 in CBC mode
+ cast5-cfb          CAST5 in CFB mode
+ cast5-ecb          CAST5 in ECB mode
+ cast5-ofb          CAST5 in OFB mode
+
+ des-cbc            DES in CBC mode
+ des                Alias for des-cbc
+ des-cfb            DES in CBC mode
+ des-ofb            DES in OFB mode
+ des-ecb            DES in ECB mode
+
+ des-ede-cbc        Two key triple DES EDE in CBC mode
+ des-ede            Two key triple DES EDE in ECB mode
+ des-ede-cfb        Two key triple DES EDE in CFB mode
+ des-ede-ofb        Two key triple DES EDE in OFB mode
+
+ des-ede3-cbc       Three key triple DES EDE in CBC mode
+ des-ede3           Three key triple DES EDE in ECB mode
+ des3               Alias for des-ede3-cbc
+ des-ede3-cfb       Three key triple DES EDE CFB mode
+ des-ede3-ofb       Three key triple DES EDE in OFB mode
+
+ desx               DESX algorithm.
+
+ gost89             GOST 28147-89 in CFB mode (provided by ccgost engine)
+ gost89-cnt        GOST 28147-89 in CNT mode (provided by ccgost engine)
+
+ idea-cbc           IDEA algorithm in CBC mode
+ idea               same as idea-cbc
+ idea-cfb           IDEA in CFB mode
+ idea-ecb           IDEA in ECB mode
+ idea-ofb           IDEA in OFB mode
+
+ rc2-cbc            128 bit RC2 in CBC mode
+ rc2                Alias for rc2-cbc
+ rc2-cfb            128 bit RC2 in CFB mode
+ rc2-ecb            128 bit RC2 in ECB mode
+ rc2-ofb            128 bit RC2 in OFB mode
+ rc2-64-cbc         64 bit RC2 in CBC mode
+ rc2-40-cbc         40 bit RC2 in CBC mode
+
+ rc4                128 bit RC4
+ rc4-64             64 bit RC4
+ rc4-40             40 bit RC4
+
+ rc5-cbc            RC5 cipher in CBC mode
+ rc5                Alias for rc5-cbc
+ rc5-cfb            RC5 cipher in CFB mode
+ rc5-ecb            RC5 cipher in ECB mode
+ rc5-ofb            RC5 cipher in OFB mode
+
+ aes-[128|192|256]-cbc  128/192/256 bit AES in CBC mode
+ aes[128|192|256]       Alias for aes-[128|192|256]-cbc
+ aes-[128|192|256]-cfb  128/192/256 bit AES in 128 bit CFB mode
+ aes-[128|192|256]-cfb1 128/192/256 bit AES in 1 bit CFB mode
+ aes-[128|192|256]-cfb8 128/192/256 bit AES in 8 bit CFB mode
+ aes-[128|192|256]-ctr  128/192/256 bit AES in CTR mode
+ aes-[128|192|256]-ecb  128/192/256 bit AES in ECB mode
+ aes-[128|192|256]-ofb  128/192/256 bit AES in OFB mode
+
+ camellia-[128|192|256]-cbc  128/192/256 bit Camellia in CBC mode
+ camellia[128|192|256]       Alias for camellia-[128|192|256]-cbc
+ camellia-[128|192|256]-cfb  128/192/256 bit Camellia in 128 bit CFB mode
+ camellia-[128|192|256]-cfb1 128/192/256 bit Camellia in 1 bit CFB mode
+ camellia-[128|192|256]-cfb8 128/192/256 bit Camellia in 8 bit CFB mode
+ camellia-[128|192|256]-ctr  128/192/256 bit Camellia in CTR mode
+ camellia-[128|192|256]-ecb  128/192/256 bit Camellia in ECB mode
+ camellia-[128|192|256]-ofb  128/192/256 bit Camellia in OFB mode"
+
+fi
