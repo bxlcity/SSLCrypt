@@ -20,7 +20,20 @@ To Derypt String in file : ./sslcrypt -df aes-128-cbc password encrypted.txt dec
 
 ______________________________________________________________________________________________
 
-## Dependencies
+
+## Download :
+
+cd /usr/bin/ && wget https://raw.githubusercontent.com/bxlcity/SSLCrypt/master/sslcrypt 
+
+chmod +x sslcrypt
+
+
+______________________________________________________________________________________________
+
+
+
+
+## Dependencies :
 
  OpenSSL ( apt-get install openssl )
 
