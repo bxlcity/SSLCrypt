@@ -10,9 +10,9 @@ ________________________________________________________________________________
 
 To Crypt String : ./sslcrypt -e aes-256-ecb pass 'string'
 
-To Drypt Sting : ./sslcrypt -d camellia-256-cbc pass 'stringcrypted'
+To Derypt Sting : ./sslcrypt -d camellia-256-cbc pass 'stringcrypted'
 
-To Crypt String in file  : ./sslcrypt -e des-ede3-cfb password in.txt out.txt
+To Crypt String in file  : ./sslcrypt -ef des-ede3-cfb password in.txt out.txt
 
 To Derypt String in file : ./sslcrypt -df aes-128-cbc password encrypted.txt decrypted.txt
 
@@ -21,15 +21,12 @@ To Derypt String in file : ./sslcrypt -df aes-128-cbc password encrypted.txt dec
 ______________________________________________________________________________________________
 
 
-## Download :
+## Download/Install :
 
-cd /usr/bin/ && wget https://raw.githubusercontent.com/bxlcity/SSLCrypt/master/sslcrypt 
-
-chmod +x sslcrypt
+cd /usr/bin/ && wget https://raw.githubusercontent.com/bxlcity/SSLCrypt/master/sslcrypt && chmod +x sslcrypt && cd
 
 
 ______________________________________________________________________________________________
-
 
 
 
